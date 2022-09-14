@@ -167,7 +167,7 @@ export default {
         },
         {
           text: "建议",
-          value: "advise",
+          value: "advice",
         },
       ],
       favList: [20, 30, 50, 60, 80],

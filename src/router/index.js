@@ -31,6 +31,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 发起请求获取用户信息
       await store.dispatch("login/initLoginState");
+      // ws 鉴权
       store.commit("ws/initWebSocket");
       // 如果获取到了，代表登陆了，直接跳转
       if (store.state.login.isLogin) {

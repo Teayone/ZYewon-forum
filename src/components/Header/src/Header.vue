@@ -84,8 +84,8 @@
                 </router-link>
               </dd>
               <dd>
-                <a href="user/message.html"
-                  ><i class="iconfont icon-tongzhi"></i>我的消息</a
+                <router-link :to="{ name: 'msg' }"
+                  ><i class="iconfont icon-tongzhi"></i>我的消息</router-link
                 >
               </dd>
               <dd>

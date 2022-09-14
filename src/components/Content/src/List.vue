@@ -64,7 +64,7 @@ export default {
       isEnd: "", // 是否结帖
       tag: "",
       sort: "created", // 按时间排序
-      page: 0,
+      page: 1,
       limit: 20,
       catalog: "",
       lists: [],

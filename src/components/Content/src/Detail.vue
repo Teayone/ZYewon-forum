@@ -68,12 +68,13 @@
 
             <!-- method1: vuex -> userInfo -> roles -> includes admin -->
             <!-- method2: 组件级权限控制 richtext -->
-            <div
-              style="display: inline-block"
-              v-if="page.uid && page.uid._id === userId"
-            >
+
+            <div style="display: inline-block" v-hasRole="'super_admin,admin'">
               <div class="fly-admin-box" data-id="123">
-                <span class="layui-btn layui-btn-xs jie-admin" type="del"
+                <span
+                  class="layui-btn layui-btn-xs jie-admin"
+                  type="del"
+                  @click="handleDelete(page)"
                   >删除</span
                 >
 
@@ -82,6 +83,8 @@
                   type="set"
                   field="stick"
                   rank="1"
+                  v-if="+page.isTop !== 1"
+                  @click="postTop(page, '1')"
                   >置顶</span
                 >
                 <span
@@ -90,18 +93,30 @@
                   field="stick"
                   rank="0"
                   style="background-color: #ccc"
-                  v-if="true"
+                  v-if="+page.isTop === 1"
+                  @click="postTop(page, '0')"
                   >取消置顶</span
                 >
 
-                <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="1">加精</span>
+                <span
+                  class="layui-btn layui-btn-xs jie-admin"
+                  type="set"
+                  field="status"
+                  rank="1"
+                  v-if="!isPrime"
+                  @click="handlePrime(page)"
+                  >加精</span
+                >
                 <span
                   class="layui-btn layui-btn-xs jie-admin"
                   type="set"
                   field="status"
                   rank="0"
-                  style="background-color:#ccc;"
-                >取消加精</span>-->
+                  style="background-color: #ccc"
+                  v-if="isPrime"
+                  @click="handleCancelPrime(page)"
+                  >取消加精</span
+                >
               </div>
             </div>
 
@@ -173,7 +188,10 @@
             >
           </div>
           <!-- 这是帖子的文本信息 -->
-          <div class="detail-body photos" v-richtext="page.content"></div>
+          <div
+            class="detail-body photos"
+            v-html="escapeHtml(page.content)"
+          ></div>
         </div>
 
         <!-- 回帖相关的内容 -->
@@ -400,7 +418,7 @@ import ValidateInput from "@/components/ValidateInput";
 import getCaptcha from "@/mixins/getCaptcha";
 import rules from "@/rules";
 import { getDetail } from "@/api/content";
-import { setReads } from "@/api/public";
+import { getTags, setReads } from "@/api/public";
 import { setCollect } from "@/api/user";
 import {
   getComments,
@@ -410,6 +428,7 @@ import {
 } from "@/api/comments";
 import formatTime from "@/utils/formatTime";
 import escapeHtml from "@/utils/escapeHtml";
+import { deletePost, postPrime } from "@/api/admin";
 export default {
   mixins: [getCaptcha],
   components: {
@@ -537,8 +556,6 @@ export default {
         res = await addComment(params);
         this.cid = "";
       }
-
-      // TODO:发送请求
 
       if (res.code !== 200) {
         return this.$alert.show({ msg: res.msg });
@@ -694,6 +711,84 @@ export default {
         }, time);
       });
     },
+    // 管理员删除帖子
+    handleDelete(page) {
+      const id = page._id;
+      this.$alert.show({
+        msg: "确定要删除该帖子吗？",
+        type: "confirm",
+        success: async () => {
+          const res = await deletePost(id);
+          if (res.code === 200) {
+            this.$pop.show({ msg: res.msg });
+            this.$router.replace({ name: "home" });
+          }
+        },
+      });
+    },
+    // 管理员加精
+    handlePrime(page) {
+      const id = page._id;
+      this.$alert.show({
+        msg: "确定要将该帖子设置为精品帖吗？",
+        type: "confirm",
+        success: async () => {
+          const tagsRes = await getTags();
+          const prime = tagsRes.data.find((item) => item.name === "精华");
+          const tagid = [prime._id];
+          const res = await postPrime({ tid: id, tags: tagid });
+          if (res.code === 200) {
+            this.$pop.show({ msg: res.msg });
+            await this.getDetailAsync();
+          }
+        },
+      });
+    },
+    // 管理员取消加精
+    handleCancelPrime(page) {
+      const tags = page.tags || [];
+      const id = page._id;
+      this.$alert.show({
+        msg: "确定要取消该帖子的精品状态吗？",
+        type: "confirm",
+        success: async () => {
+          const tagsRes = await getTags();
+          const primeId = tagsRes.data.find((item) => item.name === "精华")._id;
+          const resTags = tags.map((item) => item._id);
+          const index = resTags.indexOf(primeId);
+          if (index !== -1) {
+            resTags.splice(index, 1);
+          } else {
+            return this.$pop.show({
+              msg: "当前帖子未加精，请联系管理员修复BUG",
+            });
+          }
+          const res = await postPrime({ tid: id, tags: resTags });
+          if (res.code === 200) {
+            this.$pop.show({ msg: res.msg });
+            await this.getDetailAsync();
+          }
+        },
+      });
+    },
+    // 管理员置顶帖子
+    postTop(page, top) {
+      const id = page._id;
+      this.$alert.show({
+        msg: `确定要${top === "1" ? "置顶" : "取消置顶"}该帖子吗？`,
+        type: "confirm",
+        success: async () => {
+          const res = await postPrime({
+            tid: id,
+            isTop: top,
+          });
+          if (res.code === 200) {
+            await this.getDetailAsync();
+          }
+          this.$pop.show({ msg: res.msg });
+        },
+      });
+    },
   },
   computed: {
     userId() {
@@ -711,6 +806,13 @@ export default {
         return true;
       }
       return false;
+    },
+    isPrime() {
+      if (this.page) {
+        if (this.page.tags && this.page.tags.length > 0) {
+          return this.page.tags.some((item) => item.name === "精华");
+        }
+      }
     },
   },
   watch: {

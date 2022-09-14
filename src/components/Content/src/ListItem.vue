@@ -50,7 +50,7 @@
         </div>
         <div
           class="fly-list-badge"
-          v-show="item.tags.length > 0 && item.tags[0].name !== ''"
+          v-show="item.tags && item.tags.length > 0 && item.tags[0].name !== ''"
         >
           <span
             class="layui-badge"

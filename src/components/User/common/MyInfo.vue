@@ -66,7 +66,7 @@
         </div>
       </div>
       <validate-textarea
-        v-model="regmark"
+        v-model="remark"
         placeholder="随便写些什么刷下存在感"
         label="签名"
       />
@@ -91,7 +91,7 @@ export default {
       nickname: "",
       location: "",
       gender: "",
-      regmark: "",
+      remark: "",
       rules: {
         email: [
           {
@@ -104,12 +104,12 @@ export default {
     };
   },
   mounted() {
-    const { nickname, location, gender, regmark, username } =
+    const { nickname, location, gender, remark, username } =
       this.$store.state.login.userinfo;
     this.nickname = nickname;
     this.location = location;
     this.gender = gender;
-    this.regmark = regmark;
+    this.remark = remark;
     this.username = username;
   },
   methods: {
@@ -118,7 +118,7 @@ export default {
         nickname: this.nickname,
         location: this.location,
         gender: this.gender,
-        regmark: this.regmark,
+        remark: this.remark,
         username: this.username,
       });
       if (res.code !== 200) {

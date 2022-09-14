@@ -26,6 +26,7 @@ export default {
       try {
         const res = await getUserInfo();
         if (res.code === 200) {
+          console.log(res);
           context.commit("SET_ISLOGIN", true);
           context.commit("SET_TOKEN", localStorage.getItem("token"));
           context.commit("SET_USERINFO", res.data);

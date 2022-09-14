@@ -92,6 +92,9 @@ class ZRequest {
   post(config) {
     return this.request({ method: "POST", ...config });
   }
+  delete(config) {
+    return this.request({ method: "DELETE", ...config });
+  }
 }
 
 export default ZRequest;

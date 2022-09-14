@@ -22,7 +22,7 @@ export default {
   components: { ListItem },
   data() {
     return {
-      page: 0,
+      page: 1,
       limit: 20,
       isTop: "1",
       lists: [],

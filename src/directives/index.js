@@ -1,9 +1,6 @@
-import richtext from "./richtext";
-
+import { hasRole } from "./hasRole";
 export default {
   install(Vue) {
-    Object.keys(richtext).forEach((key) => {
-      Vue.directive(key, richtext[key]);
-    });
+    Vue.directive("hasRole", hasRole);
   },
 };

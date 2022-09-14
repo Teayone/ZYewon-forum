@@ -49,3 +49,9 @@ export const getCommentsList = (params) => {
     params,
   });
 };
+
+export const getTags = () => {
+  return request.get({
+    url: "/public/tags",
+  });
+};

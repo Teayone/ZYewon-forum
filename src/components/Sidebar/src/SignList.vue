@@ -141,6 +141,7 @@ export default {
 }
 .ov {
   overflow-x: hidden !important;
+  flex: 1 !important;
   &::-webkit-scrollbar {
     width: 5px;
   }

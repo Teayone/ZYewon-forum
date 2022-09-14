@@ -102,11 +102,13 @@ export default {
 
         // TODO：跳转至首页
         this.$store.commit("login/SET_TOKEN", loginRes.data.token);
+        this.$store.commit('ws/initWebSocket')
         this.$store.commit("login/SET_USERINFO", loginRes.data.data);
         this.$store.commit("login/SET_ISLOGIN", true);
         localStorage.removeItem("sid");
         this.$store.commit("global/SET_SID", "");
         this.$router.push("/");
+
       } else if (loginRes.code === 40001) {
         // 验证码校验失败
         this.codeErrorMsg = loginRes.msg;
