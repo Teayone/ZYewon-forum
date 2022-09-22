@@ -216,7 +216,11 @@
                   <cite>{{ bestComment.cuid.nickname }}</cite>
                   <i
                     class="layui-badge fly-badge-vip comment-user-vip"
-                    v-if="+bestComment.cuid.isVip > 0"
+                    v-if="
+                      +bestComment.cuid &&
+                      +bestComment.cuid.isVip &&
+                      +bestComment.cuid.isVip > 0
+                    "
                     >VIP{{ bestComment.cuid.isVip }}</i
                   >
                 </router-link>
@@ -292,7 +296,7 @@
                         v-if="
                           item.cuid && item.cuid.isVip && +item.cuid.isVip !== 0
                         "
-                        >VIP{{ item.uid.isVip }}</i
+                        >VIP{{ item.cuid.isVip }}</i
                       >
                     </router-link>
 
@@ -484,6 +488,7 @@ export default {
         return this.$router.replace("/404");
       }
       this.page = res.data;
+      console.log(this.page);
     },
     // 获取评论列表
     async getCommentsAsync() {
