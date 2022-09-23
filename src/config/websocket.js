@@ -1,8 +1,9 @@
 import store from "@/store";
+import { wsUrl } from "./index";
 class WebSocketClient {
   constructor(config = {}) {
     const defaultConfig = {
-      url: "127.0.0.1",
+      url: wsUrl,
       port: "3001",
       protocol: "ws",
     };

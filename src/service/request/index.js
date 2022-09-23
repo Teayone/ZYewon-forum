@@ -28,13 +28,6 @@ class ZRequest {
         return res.data;
       },
       (err) => {
-        console.log(err);
-        // if (err.response.data.code === 401) {
-        //   return Promise.resolve({
-        //     code: 401,
-        //     msg: "用户未登录，或登录时效已过",
-        //   });
-        // }
         this.loading = false;
         return Promise.reject(err);
       }
