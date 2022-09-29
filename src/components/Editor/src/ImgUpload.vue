@@ -93,7 +93,7 @@ export default {
         this.$alert.show({ msg: "图片上传失败" });
       }
       // 图片上传成功，保存链接
-      const imgUrl = baseURL + "/" + res.imgUrl;
+      const imgUrl = res.imgUrl;
       this.pic = imgUrl;
       this.$refs.inputFile.value = "";
     },

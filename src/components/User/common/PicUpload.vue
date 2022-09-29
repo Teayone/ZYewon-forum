@@ -56,7 +56,7 @@ export default {
       console.log(res);
       // 更新用户信息
       const isUpdate = await updateUser({
-        pic: baseURL + "/" + res.imgUrl,
+        pic: res.imgUrl,
       });
       if (isUpdate.code !== 200) {
         return this.$alert.show({ msg: "上传失败" });
